@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="ShopNest — a responsive single-page online store demo." />
+  <title>ShopNest | Online Shopping</title>
+  <style>
+    :root {
+      --navy: #131921;
+      --navy-2: #232f3e;
+      --yellow: #febd69;
+      --yellow-dark: #f3a847;
+      --ink: #17212b;
+      --muted: #667085;
+      --line: #e5e7eb;
+      --page: #e9edf2;
+      --white: #fff;
+      --green: #067d62;
+      --shadow: 0 8px 24px rgba(16, 24, 40, .09);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; font-family: Arial, Helvetica, sans-serif; color: var(--ink); background: var(--page); }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .topbar {
+      min-height: 66px; background: var(--navy); color: white; display: flex;
+      align-items: center; gap: 18px; padding: 10px max(18px, calc((100% - 1280px)/2));
+    }
+    .logo { color: white; text-decoration: none; font-size: 25px; font-weight: 800; letter-spacing: -.8px; white-space: nowrap; }
+    .logo span { color: var(--yellow); }
+    .delivery { color: #d6dbe1; font-size: 11px; line-height: 1.25; white-space: nowrap; }
+    .delivery strong { display: block; color: white; font-size: 13px; }
+    .search { display: flex; flex: 1; min-width: 120px; height: 42px; border-radius: 6px; overflow: hidden; }
+    .search input { flex: 1; min-width: 0; border: 0; outline: 0; padding: 0 14px; font-size: 14px; }
+    .search button { width: 48px; border: 0; background: var(--yellow); font-size: 20px; }
+    .search button:hover { background: var(--yellow-dark); }
+    .header-link { color: white; text-decoration: none; font-size: 12px; white-space: nowrap; line-height: 1.25; }
+    .header-link strong { display: block; font-size: 14px; }
+    .cart-button { border: 1px solid transparent; background: transparent; color: white; font-weight: 700; padding: 7px 9px; border-radius: 5px; white-space: nowrap; }
+    .cart-button:hover, .header-link:hover { border-color: white; }
+    .cart-icon { font-size: 23px; vertical-align: middle; }
+    .cart-count { display: inline-grid; place-items: center; background: var(--yellow); color: var(--navy); border-radius: 50%; min-width: 19px; height: 19px; font-size: 11px; margin-left: -4px; vertical-align: top; }
+    .subnav { min-height: 40px; display: flex; align-items: center; gap: 22px; padding: 0 max(18px, calc((100% - 1280px)/2)); background: var(--navy-2); color: white; overflow-x: auto; }
+    .subnav a { color: white; text-decoration: none; font-size: 13px; white-space: nowrap; }
+    .subnav a:hover { text-decoration: underline; }
+    .page { max-width: 1280px; margin: 0 auto; padding: 18px; }
+    .hero {
+      min-height: 300px; border-radius: 10px; overflow: hidden; position: relative; display: flex;
+      align-items: center; padding: clamp(24px, 5vw, 64px); color: white;
+      background: linear-gradient(90deg, rgba(13,29,46,.94), rgba(13,29,46,.70) 48%, rgba(13,29,46,.08)),
+        url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1800&q=85') center/cover;
+      box-shadow: var(--shadow);
+    }
+    .hero-copy { max-width: 510px; }
+    .eyebrow { color: var(--yellow); text-transform: uppercase; font-size: 12px; font-weight: 800; letter-spacing: 1.8px; }
+    .hero h1 { margin: 12px 0; font-size: clamp(32px, 5vw, 54px); line-height: 1.04; letter-spacing: -1.5px; }
+    .hero p { max-width: 420px; color: #e5eaf0; line-height: 1.6; margin: 0 0 22px; }
+    .primary-btn { background: var(--yellow); color: #18212b; border: 0; border-radius: 24px; padding: 12px 22px; font-weight: 700; }
+    .primary-btn:hover { background: var(--yellow-dark); }
+    .benefits { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 16px 0 22px; }
+    .benefit { background: white; padding: 15px; border-radius: 8px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 10px rgba(16,24,40,.04); }
+    .benefit .symbol { font-size: 24px; }
+    .benefit strong { display: block; font-size: 13px; }
+    .benefit small { color: var(--muted); font-size: 11px; }
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 12px; margin: 26px 0 13px; }
+    .section-head h2 { margin: 0; font-size: 23px; letter-spacing: -.5px; }
+    .section-head p { color: var(--muted); font-size: 12px; margin: 4px 0 0; }
+    .text-link { border: 0; background: none; color: #007185; font-size: 13px; font-weight: 700; }
+    .categories { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+    .category {
+      background: white; border: 1px solid transparent; border-radius: 8px; padding: 16px 10px;
+      text-align: center; transition: .18s; color: var(--ink);
+    }
+    .category:hover, .category.active { border-color: #007185; transform: translateY(-2px); box-shadow: var(--shadow); }
+    .category .emoji { display: block; font-size: 31px; margin-bottom: 8px; }
+    .category strong { font-size: 12px; }
+    .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; background: white; border-radius: 8px; padding: 12px 14px; margin-bottom: 12px; }
+    .toolbar label { font-size: 12px; color: var(--muted); }
+    .toolbar select { border: 1px solid var(--line); border-radius: 5px; padding: 8px 10px; background: white; color: var(--ink); }
+    .product-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    .product {
+      background: white; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column;
+      min-width: 0; box-shadow: 0 2px 9px rgba(16,24,40,.04); transition: transform .18s, box-shadow .18s;
+    }
+    .product:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+    .product-image { height: 190px; background: #f6f7f8; position: relative; display: grid; place-items: center; overflow: hidden; }
+    .product-image img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s; }
+    .product:hover .product-image img { transform: scale(1.04); }
+    .tag { position: absolute; top: 10px; left: 10px; background: #cc0c39; color: white; font-size: 10px; font-weight: 700; padding: 5px 8px; border-radius: 3px; }
+    .product-info { padding: 13px; display: flex; flex-direction: column; flex: 1; }
+    .product-category { color: #007185; font-size: 10px; text-transform: uppercase; letter-spacing: .7px; font-weight: 700; }
+    .product h3 { font-size: 14px; line-height: 1.4; margin: 6px 0; min-height: 39px; }
+    .rating { color: #de7921; font-size: 12px; letter-spacing: 1px; }
+    .rating span { color: #68717c; letter-spacing: 0; font-size: 11px; }
+    .price-row { margin: 9px 0 12px; display: flex; align-items: baseline; gap: 7px; }
+    .price { font-size: 20px; font-weight: 800; }
+    .old-price { color: #7b8490; font-size: 11px; text-decoration: line-through; }
+    .product-bottom { margin-top: auto; }
+    .add-btn { width: 100%; background: #ffd814; border: 1px solid #fcd200; border-radius: 20px; padding: 9px; font-size: 12px; font-weight: 700; }
+    .add-btn:hover { background: #f7ca00; }
+    .empty { grid-column: 1/-1; background: white; padding: 40px; text-align: center; border-radius: 8px; color: var(--muted); }
+    .newsletter { margin: 28px 0; background: var(--navy-2); border-radius: 9px; color: white; padding: 26px; display: flex; justify-content: space-between; align-items: center; gap: 18px; }
+    .newsletter h2 { margin: 0 0 5px; font-size: 21px; }
+    .newsletter p { margin: 0; color: #cbd3dc; font-size: 13px; }
+    .newsletter form { display: flex; gap: 7px; width: min(420px, 100%); }
+    .newsletter input { flex: 1; min-width: 0; border: 0; border-radius: 4px; padding: 11px; }
+    .newsletter button { border: 0; background: var(--yellow); border-radius: 4px; padding: 0 15px; font-weight: 700; }
+    footer { background: var(--navy); color: #d5dbe2; padding: 30px 18px; text-align: center; font-size: 12px; }
+    footer a { color: white; text-decoration: none; margin: 0 8px; }
+    .back-top { display: block; background: #37475a; color: white; text-align: center; padding: 12px; text-decoration: none; font-size: 12px; }
+    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.48); z-index: 20; opacity: 0; pointer-events: none; transition: opacity .2s; }
+    .overlay.open { opacity: 1; pointer-events: auto; }
+    .cart-drawer { position: fixed; z-index: 21; top: 0; right: 0; height: 100%; width: min(430px, 100%); background: white; transform: translateX(105%); transition: transform .25s; display: flex; flex-direction: column; box-shadow: -10px 0 35px rgba(0,0,0,.18); }
+    .cart-drawer.open { transform: translateX(0); }
+    .cart-head { display: flex; align-items: center; justify-content: space-between; padding: 18px; border-bottom: 1px solid var(--line); }
+    .cart-head h2 { margin: 0; font-size: 20px; }
+    .close-cart { border: 0; background: #f1f3f5; border-radius: 50%; width: 34px; height: 34px; font-size: 19px; }
+    .cart-items { padding: 8px 18px; overflow-y: auto; flex: 1; }
+    .cart-item { display: grid; grid-template-columns: 72px 1fr auto; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+    .cart-item img { width: 72px; height: 76px; object-fit: cover; border-radius: 5px; background: #f4f5f6; }
+    .cart-item h4 { margin: 2px 0 6px; font-size: 13px; line-height: 1.35; }
+    .cart-item .item-price { font-size: 13px; font-weight: 700; }
+    .qty { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 5px; margin-top: 8px; overflow: hidden; }
+    .qty button { border: 0; background: #f7f8f9; width: 27px; height: 25px; }
+    .qty span { min-width: 28px; text-align: center; font-size: 12px; }
+    .remove { border: 0; background: none; color: #b42318; font-size: 11px; margin-top: 7px; padding: 0; }
+    .cart-footer { border-top: 1px solid var(--line); padding: 18px; }
+    .subtotal { display: flex; justify-content: space-between; font-weight: 800; font-size: 17px; margin-bottom: 13px; }
+    .checkout { width: 100%; border: 0; background: #ffd814; padding: 13px; border-radius: 22px; font-weight: 700; }
+    .cart-empty { text-align: center; color: var(--muted); padding: 55px 15px; }
+    .toast { position: fixed; z-index: 30; bottom: 22px; left: 50%; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; background: #17212b; color: white; border-radius: 25px; padding: 11px 18px; font-size: 13px; box-shadow: var(--shadow); transition: .2s; }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    @media (max-width: 900px) {
+      .delivery, .header-link { display: none; }
+      .product-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .categories { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .topbar { flex-wrap: wrap; gap: 10px; padding: 10px 13px; }
+      .logo { font-size: 22px; }
+      .search { order: 3; flex-basis: 100%; }
+      .subnav { padding: 0 13px; gap: 17px; }
+      .page { padding: 12px; }
+      .hero { min-height: 280px; padding: 25px 20px; background-position: 58% center; }
+      .hero h1 { font-size: 36px; }
+      .benefits { grid-template-columns: 1fr; gap: 8px; }
+      .benefit { padding: 11px 14px; }
+      .categories { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .category { padding: 13px 5px; }
+      .category .emoji { font-size: 25px; }
+      .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+      .product-image { height: 145px; }
+      .product-info { padding: 10px; }
+      .product h3 { font-size: 12px; min-height: 50px; }
+      .price { font-size: 17px; }
+      .newsletter { flex-direction: column; align-items: stretch; padding: 20px; }
+      .newsletter form { width: 100%; }
+      .section-head h2 { font-size: 20px; }
+    }
+    @media (max-width: 360px) { .product-grid { grid-template-columns: 1fr; } .product-image { height: 210px; } }
+  </style>
+</head>
+<body>
+  <header id="top">
+    <div class="topbar">
+      <a class="logo" href="#" aria-label="ShopNest home">shop<span>nest</span></a>
+      <div class="delivery">Delivering to<strong>Pakistan</strong></div>
+      <form class="search" id="searchForm" role="search">
+        <input id="searchInput" type="search" placeholder="Search products..." aria-label="Search products" />
+        <button type="submit" aria-label="Search">⌕</button>
+      </form>
+      <a class="header-link" href="#products">Hello, shopper<strong>Explore deals</strong></a>
+      <button class="cart-button" id="openCart" aria-label="Open shopping cart"><span class="cart-icon">🛒</span> Cart <span class="cart-count" id="cartCount">0</span></button>
+    </div>
+    <nav class="subnav" aria-label="Main navigation">
+      <a href="#categories">☰ All departments</a>
+      <a href="#products">Today's deals</a>
+      <a href="#products" data-nav-category="Electronics">Electronics</a>
+      <a href="#products" data-nav-category="Fashion">Fashion</a>
+      <a href="#products" data-nav-category="Home">Home & Kitchen</a>
+      <a href="#newsletter">Customer service</a>
+    </nav>
+  </header>
+
+  <main class="page">
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow">The everyday shopping destination</div>
+        <h1>Great finds.<br />Even better prices.</h1>
+        <p>Discover useful tech, everyday essentials and fresh styles — all in one place.</p>
+        <button class="primary-btn" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">Shop the collection →</button>
+      </div>
+    </section>
+
+    <section class="benefits" aria-label="Shopping benefits">
+      <div class="benefit"><span class="symbol">🚚</span><div><strong>Convenient delivery</strong><small>Delivered right to your door</small></div></div>
+      <div class="benefit"><span class="symbol">🔒</span><div><strong>Secure shopping</strong><small>Your details stay protected</small></div></div>
+      <div class="benefit"><span class="symbol">↩️</span><div><strong>Easy returns</strong><small>Simple and hassle-free support</small></div></div>
+    </section>
+
+    <section id="categories">
+      <div class="section-head"><div><h2>Shop by category</h2><p>Find something you'll love</p></div></div>
+      <div class="categories" id="categoryList">
+        <button class="category active" data-category="All"><span class="emoji">✨</span><strong>All products</strong></button>
+        <button class="category" data-category="Electronics"><span class="emoji">🎧</span><strong>Electronics</strong></button>
+        <button class="category" data-category="Fashion"><span class="emoji">👟</span><strong>Fashion</strong></button>
+        <button class="category" data-category="Home"><span class="emoji">🏡</span><strong>Home & Kitchen</strong></button>
+        <button class="category" data-category="Beauty"><span class="emoji">🧴</span><strong>Beauty</strong></button>
+        <button class="category" data-category="Sports"><span class="emoji">🏋️</span><strong>Sports</strong></button>
+      </div>
+    </section>
+
+    <section id="products">
+      <div class="section-head">
+        <div><h2>Popular products</h2><p id="resultCount">Hand-picked favorites for you</p></div>
+        <button class="text-link" id="clearFilters">Clear filters</button>
+      </div>
+      <div class="toolbar">
+        <label id="activeFilter">Showing all products</label>
+        <div><label for="sortSelect">Sort by </label>
+          <select id="sortSelect">
+            <option value="featured">Featured</option>
+            <option value="low">Price: low to high</option>
+            <option value="high">Price: high to low</option>
+            <option value="rating">Customer rating</option>
+          </select>
+        </div>
+      </div>
+      <div class="product-grid" id="productGrid"></div>
+    </section>
+
+    <section class="newsletter" id="newsletter">
+      <div><h2>Get the good stuff first.</h2><p>Sign up for product news and special offers.</p></div>
+      <form id="newsletterForm">
+        <input type="email" placeholder="Your email address" required aria-label="Your email address" />
+        <button type="submit">Subscribe</button>
+      </form>
+    </section>
+  </main>
+
+  <a class="back-top" href="#top">Back to top ↑</a>
+  <footer>
+    <div style="font-size:19px;font-weight:800;color:white;margin-bottom:10px">shop<span style="color:#febd69">nest</span></div>
+    <div><a href="#products">Products</a><a href="#categories">Categories</a><a href="#newsletter">Contact</a></div>
+    <p>© 2026 ShopNest Demo. Built for learning and demonstration.</p>
+    <p>Demo store only — no real payments or orders are processed.</p>
+  </footer>
+
+  <div class="overlay" id="overlay"></div>
+  <aside class="cart-drawer" id="cartDrawer" aria-label="Shopping cart" aria-modal="true" role="dialog">
+    <div class="cart-head"><h2>Your shopping cart</h2><button class="close-cart" id="closeCart" aria-label="Close cart">×</button></div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-footer">
+      <div class="subtotal"><span>Subtotal</span><span id="subtotal">Rs. 0</span></div>
+      <button class="checkout" id="checkoutBtn">Proceed to checkout</button>
+      <p style="font-size:11px;color:#667085;text-align:center;margin:10px 0 0">Shipping and taxes calculated at checkout.</p>
+    </div>
+  </aside>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const products = [
+      {id:1, name:"Wireless Noise-Cancelling Headphones", category:"Electronics", price:7499, oldPrice:9999, rating:4.8, reviews:128, tag:"Best seller", image:"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=700&q=80"},
+      {id:2, name:"Smart Watch with Fitness Tracking", category:"Electronics", price:5899, oldPrice:7499, rating:4.6, reviews:94, tag:"Deal", image:"https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=700&q=80"},
+      {id:3, name:"Everyday Classic Sneakers", category:"Fashion", price:4299, oldPrice:5499, rating:4.7, reviews:76, tag:"Popular", image:"https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=700&q=80"},
+      {id:4, name:"Minimal Leather Backpack", category:"Fashion", price:3499, oldPrice:4299, rating:4.5, reviews:61, tag:"", image:"https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=700&q=80"},
+      {id:5, name:"Modern Ceramic Table Lamp", category:"Home", price:2899, oldPrice:3599, rating:4.4, reviews:43, tag:"", image:"https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=700&q=80"},
+      {id:6, name:"Stainless Steel Travel Bottle", category:"Home", price:1499, oldPrice:1999, rating:4.6, reviews:88, tag:"Deal", image:"https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=700&q=80"},
+      {id:7, name:"Daily Hydration Skincare Set", category:"Beauty", price:3199, oldPrice:3999, rating:4.7, reviews:52, tag:"", image:"https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?auto=format&fit=crop&w=700&q=80"},
+      {id:8, name:"Yoga Mat with Carrying Strap", category:"Sports", price:2199, oldPrice:2799, rating:4.5, reviews:39, tag:"", image:"https://images.unsplash.com/photo-1592432678016-e910b452f9a2?auto=format&fit=crop&w=700&q=80"}
+    ];
+    // Correct image URLs for the first and fifth products.
+    products[0].image = "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=700&q=80";
+    products[4].image = "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=700&q=80";
+
+    let cart = {};
+    let selectedCategory = "All";
+    let searchTerm = "";
+    let sortMode = "featured";
+
+    const money = value => "Rs. " + value.toLocaleString("en-PK");
+    const grid = document.getElementById("productGrid");
+    const cartCount = document.getElementById("cartCount");
+
+    function visibleProducts() {
+      let list = products.filter(p =>
+        (selectedCategory === "All" || p.category === selectedCategory) &&
+        (p.name.toLowerCase().includes(searchTerm) || p.category.toLowerCase().includes(searchTerm))
+      );
+      if (sortMode === "low") list.sort((a,b) => a.price-b.price);
+      if (sortMode === "high") list.sort((a,b) => b.price-a.price);
+      if (sortMode === "rating") list.sort((a,b) => b.rating-a.rating);
+      return list;
+    }
+
+    function renderProducts() {
+      const list = visibleProducts();
+      document.getElementById("resultCount").textContent = `${list.length} product${list.length === 1 ? "" : "s"} found`;
+      document.getElementById("activeFilter").textContent =
+        `Showing ${selectedCategory === "All" ? "all categories" : selectedCategory}${searchTerm ? ` matching “${searchTerm}”` : ""}`;
+      grid.innerHTML = list.length ? list.map(p => `
+        <article class="product">
+          <div class="product-image">
+            ${p.tag ? `<span class="tag">${p.tag}</span>` : ""}
+            <img src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.src='https://placehold.co/600x450/f1f3f5/667085?text=Product+Image'">
+          </div>
+          <div class="product-info">
+            <div class="product-category">${p.category}</div>
+            <h3>${p.name}</h3>
+            <div class="rating" aria-label="${p.rating} out of 5 stars">★★★★★ <span>${p.rating} (${p.reviews})</span></div>
+            <div class="price-row"><span class="price">${money(p.price)}</span><span class="old-price">${money(p.oldPrice)}</span></div>
+            <div class="product-bottom"><button class="add-btn" onclick="addToCart(${p.id})">Add to cart</button></div>
+          </div>
+        </article>`).join("") : `<div class="empty"><div style="font-size:35px">🔎</div><h3>No products found</h3><p>Try another search or category.</p></div>`;
+    }
+
+    function addToCart(id) {
+      cart[id] = (cart[id] || 0) + 1;
+      renderCart();
+      showToast("Added to your cart");
+    }
+    function changeQty(id, amount) {
+      cart[id] = (cart[id] || 0) + amount;
+      if (cart[id] <= 0) delete cart[id];
+      renderCart();
+    }
+    function removeItem(id) { delete cart[id]; renderCart(); }
+    function renderCart() {
+      const entries = Object.entries(cart);
+      const count = entries.reduce((sum, [,qty]) => sum + qty, 0);
+      const total = entries.reduce((sum, [id,qty]) => sum + products.find(p => p.id === Number(id)).price * qty, 0);
+      cartCount.textContent = count;
+      document.getElementById("subtotal").textContent = money(total);
+      document.getElementById("cartItems").innerHTML = entries.length ? entries.map(([id,qty]) => {
+        const p = products.find(item => item.id === Number(id));
+        return `<div class="cart-item">
+          <img src="${p.image}" alt="${p.name}">
+          <div><h4>${p.name}</h4><div class="item-price">${money(p.price)}</div>
+            <div class="qty"><button aria-label="Decrease quantity" onclick="changeQty(${p.id},-1)">−</button><span>${qty}</span><button aria-label="Increase quantity" onclick="changeQty(${p.id},1)">+</button></div>
+            <button class="remove" onclick="removeItem(${p.id})">Remove</button>
+          </div>
+          <strong style="font-size:12px">${money(p.price*qty)}</strong>
+        </div>`;
+      }).join("") : `<div class="cart-empty"><div style="font-size:42px">🛒</div><h3>Your cart is empty</h3><p>Looks like you haven't added anything yet.</p></div>`;
+    }
+    function openCart() {
+      document.getElementById("cartDrawer").classList.add("open");
+      document.getElementById("overlay").classList.add("open");
+      document.getElementById("cartDrawer").setAttribute("aria-hidden", "false");
+    }
+    function closeCart() {
+      document.getElementById("cartDrawer").classList.remove("open");
+      document.getElementById("overlay").classList.remove("open");
+      document.getElementById("cartDrawer").setAttribute("aria-hidden", "true");
+    }
+    let toastTimer;
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+
+    document.getElementById("categoryList").addEventListener("click", e => {
+      const button = e.target.closest("[data-category]");
+      if (!button) return;
+      selectedCategory = button.dataset.category;
+      document.querySelectorAll(".category").forEach(el => el.classList.toggle("active", el === button));
+      renderProducts();
+    });
+    document.querySelectorAll("[data-nav-category]").forEach(link => link.addEventListener("click", () => {
+      selectedCategory = link.dataset.navCategory;
+      document.querySelectorAll(".category").forEach(el => el.classList.toggle("active", el.dataset.category === selectedCategory));
+      renderProducts();
+    }));
+    document.getElementById("searchForm").addEventListener("submit", e => {
+      e.preventDefault();
+      searchTerm = document.getElementById("searchInput").value.trim().toLowerCase();
+      renderProducts();
+      document.getElementById("products").scrollIntoView({behavior:"smooth"});
+    });
+    document.getElementById("sortSelect").addEventListener("change", e => { sortMode = e.target.value; renderProducts(); });
+    document.getElementById("clearFilters").addEventListener("click", () => {
+      selectedCategory = "All"; searchTerm = ""; sortMode = "featured";
+      document.getElementById("searchInput").value = "";
+      document.getElementById("sortSelect").value = "featured";
+      document.querySelectorAll(".category").forEach(el => el.classList.toggle("active", el.dataset.category === "All"));
+      renderProducts();
+    });
+    document.getElementById("openCart").addEventListener("click", openCart);
+    document.getElementById("closeCart").addEventListener("click", closeCart);
+    document.getElementById("overlay").addEventListener("click", closeCart);
+    document.addEventListener("keydown", e => { if (e.key === "Escape") closeCart(); });
+    document.getElementById("checkoutBtn").addEventListener("click", () => {
+      if (!Object.keys(cart).length) { showToast("Your cart is empty"); return; }
+      showToast("Demo checkout — payment is not enabled");
+    });
+    document.getElementById("newsletterForm").addEventListener("submit", e => {
+      e.preventDefault(); e.target.reset(); showToast("Thanks for subscribing!");
+    });
+
+    renderProducts();
+    renderCart();
+  </script>
+</body>
+</html>
